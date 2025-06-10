@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_ACCESS :: THE KINGMAKER PROTOCOL</title>
+    <style>
+        /* --- FONT IMPORTS --- */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap');
+
+        /* --- THEME & GLOBAL STYLES --- */
+        :root {
+            --bg-color: #02040a;
+            --terminal-bg: rgba(10, 20, 35, 0.8);
+            --text-color: #e0e6f0;
+            --primary-accent: #ff1b1b; /* Fatal Red */
+            --secondary-accent: #00d4ff; /* Protocol Cyan */
+            --glow-red: 0 0 1px var(--primary-accent), 0 0 3px var(--primary-accent);
+            --glow-cyan: 0 0 1px var(--secondary-accent), 0 0 1px var(--secondary-accent);
+            --border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: moveGrid 200s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            from { background-position: 0 0; }
+            to { background-position: -1000px -1000px; }
+        }
+
+        /* --- SCANLINE & STATIC OVERLAY --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background:
+                linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 70%, rgba(255,255,255,0));
+            background-size: 100% 4px;
+            animation: scan 7s linear infinite;
+            z-index: 100;
+        }
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100vh; }
+        }
+        body::after {
+            content: ' ';
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0.05;
+            animation: noise 0.5s steps(2, end) infinite;
+        }
+        @keyframes noise {
+            0%, 100% { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='10' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); }
+        }
+
+        /* --- SCRIPT CONTAINER / "GLASS TERMINAL" --- */
+        .script-container {
+            max-width: 840px;
+            width: 100%;
+            margin: 4rem 1rem;
+            padding: 2rem 3rem;
+            box-sizing: border-box;
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+
+        /* --- HEADER & GLITCHED TITLE --- */
+        .main-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .logo-container svg {
+            width: 70px;
+            height: 70px;
+            fill: var(--primary-accent);
+            filter: drop-shadow(var(--glow-red));
+            margin-bottom: 1.5rem;
+            animation: pulse-red 3s infinite ease-in-out;
+        }
+        @keyframes pulse-red {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            text-shadow: 0 0 2px var(--text-color);
+        }
+        /* The CSS Glitch Effect */
+        .glitch-title::before, .glitch-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--terminal-bg);
+            overflow: hidden;
+        }
+        .glitch-title::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--primary-accent);
+            animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
+        }
+        .glitch-title::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--secondary-accent), 2px 2px var(--primary-accent);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(30% 0 60% 0); } 20% { clip-path: inset(90% 0 2% 0); } 40% { clip-path: inset(15% 0 70% 0); } 60% { clip-path: inset(50% 0 45% 0); } 80% { clip-path: inset(75% 0 5% 0); } 100% { clip-path: inset(40% 0 40% 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(80% 0 5% 0); } 20% { clip-path: inset(10% 0 88% 0); } 40% { clip-path: inset(60% 0 30% 0); } 60% { clip-path: inset(33% 0 50% 0); } 80% { clip-path: inset(5% 0 90% 0); } 100% { clip-path: inset(95% 0 2% 0); }
+        }
+
+        /* --- SCRIPT FORMATTING --- */
+        .script-content {
+            margin-top: 2rem;
+        }
+
+        h2 { /* COLD OPEN */
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            color: var(--primary-accent);
+            text-shadow: var(--glow-red);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin: 3rem 0;
+        }
+
+        h3 { /* SCENE HEADINGS */
+            font-family: 'Source Code Pro', monospace;
+            text-transform: uppercase;
+            color: var(--text-color);
+            margin: 2.5rem 0 1.5rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1rem;
+        }
+
+        .character {
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 1.5em auto 0.5em auto;
+            max-width: 60%;
+            color: var(--secondary-accent);
+            text-shadow: var(--glow-cyan);
+        }
+
+        .dialogue {
+            padding: 0 2.5em;
+            text-align: justify;
+        }
+
+        .parenthetical {
+            text-align: center;
+            color: #9ab;
+            font-style: italic;
+            margin-bottom: 0.5em;
+        }
+
+        .action {
+            color: #b0c4de;
+            font-style: italic;
+        }
+        
+        .transition {
+            text-align: right;
+            font-family: 'Source Code Pro', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 2em 0;
+            color: var(--primary-accent);
+        }
+
+        .code {
+            background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            padding: 1em 1.5em;
+            margin: 2em auto;
+            font-family: 'Source Code Pro', monospace;
+            color: var(--primary-accent);
+            text-align: center;
+            letter-spacing: 3px;
+            border-radius: 4px;
+            text-shadow: var(--glow-red);
+            width: 80%;
+        }
+        
+        .end-marker {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 4rem;
+            color: var(--primary-accent);
+            text-shadow: var(--glow-red);
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+        }
+        
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 768px) {
+            .script-container {
+                padding: 1.5rem;
+                margin: 2rem 0.5rem;
+            }
+            .glitch-title {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+            .logo-container svg {
+                width: 60px;
+                height: 60px;
+            }
+            .dialogue {
+                padding: 0 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <main class="script-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <!-- Embedded SVG for a standard Chess King -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+                    <g fill-rule="evenodd" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22.5 11.63V6M20 8h5" fill="none" stroke-linejoin="miter"/>
+                        <path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" stroke-linecap="butt" stroke-linejoin="miter"/>
+_                        <path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-2.5-7.5-12-10.5-16-4-3 6 6 10.5 6 10.5v7" fill-rule="nonzero"/>
+                        <path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/>
+                    </g>
+                </svg>
+            </div>
+            <h1 class="glitch-title" data-text="The Kingmaker Protocol">The Kingmaker Protocol</h1>
+        </header>
+
+        <section class="script-content">
+            <!-- The script content is inserted here -->
+            <h2>COLD OPEN</h2>
+
+            <h3>EXT. HOTEL ROOFTOP BAR - NIGHT (ONE YEAR AGO)</h3>
+            <p class="action">Laughter. The clink of glasses. A panoramic view of a glittering city.
+            CALEB (40s, alive, charming in a way we won't see again) leans across a small table, his hand covering ANNA's (40s, sharp, conflicted).</p>
+
+            <p class="character">ANNA</p>
+            <p class="dialogue">This is insane, Cal. She's my friend.</p>
+
+            <p class="character">CALEB</p>
+            <p class="dialogue">It’s complicated. You know it is. She’s… checked out. We’re just two partners running a household. This… this is different.</p>
+            <p class="action">He squeezes her hand. He’s magnetic, convincing.</p>
+
+            <p class="character">ANNA</p>
+            <p class="dialogue">What if she finds out?</p>
+
+            <p class="character">CALEB</p>
+            <p class="dialogue">She won’t. I have everything under control. Always.</p>
+            <p class="action">He smiles, the picture of confidence. The city glitters behind him, a kingdom at his feet.</p>
+
+            <p class="transition">FADE TO BLACK.</p>
+            <p class="transition">FADE IN:</p>
+
+            <h3>INT. CALEB'S OFFICE - NIGHT (PRESENT DAY)</h3>
+            <p class="action">The office is a mausoleum of glass and steel. Expensive, but cold. Caleb stares at a line of code on a monitor:</p>
+            <p class="code">[ KING'S ECHO PROTOCOL :: ARM ]</p>
+            <p class="action">He's teaching his daughter, MAYA (8), chess via video call. She's smart, already understanding strategy.</p>
+
+            <p class="character">MAYA (on screen)</p>
+            <p class="dialogue">…so if I sacrifice my knight, I can fork your king and rook. Right, Daddy?</p>
+
+            <p class="character">CALEB</p>
+            <p class="parenthetical">(a flicker of pride)</p>
+            <p class="dialogue">That's my girl. A knight is worth three points, but a fork like that? That’s how you win the game. Sometimes you have to give up a powerful piece to win.</p>
+
+            <p class="character">MAYA (on screen)</p>
+            <p class="dialogue">Like Mommy says? She said the queen is the most powerful, but sometimes she has to be the distraction so the little pawn can get to the other side.</p>
+            <p class="action">Caleb’s smile freezes. He glances at a face-down photo frame on his desk. A brief, haunted look crosses his face—not just guilt, but a deep, hidden sadness.</p>
+
+            <p class="character">CALEB</p>
+            <p class="dialogue">Yeah, sweetheart. Just like that. Go get ready for bed. I’ll be home soon.</p>
+            <p class="action">He ends the call. His phone buzzes. A text from an UNKNOWN NUMBER.</p>
+            <p class="code">TEXT: The board is set. Time to see what you'll sacrifice.</p>
+            <p class="action">Caleb’s jaw tightens. He hits ENTER. The KING'S ECHO protocol arms with a soft CHIME. Suddenly, the steel doors to his office SLAM SHUT with a deafening THUD. Red security lights flash. A low HISSING sound begins as vapor streams from hidden vents in the ceiling. Caleb looks around, confused, then alarmed, as his own fortress turns against him. He stumbles towards the door, his movements becoming sluggish before he collapses.</p>
+
+            <p class="transition">CUT TO:</p>
+
+            <h3>INT. THE ECHO CHAMBER - LATER</h3>
+            <p class="action">SOUND of a low, resonant thrum, like a massive server breathing.<br>A sharp INHALE.<br>Caleb’s eyes snap open. He's in a minimalist steel chair, limbs locked by magnetic clasps. A sleek neuro-link halo is fitted around his head. This isn't just a prison; it's the hardware running a world inside his mind.<br>The room is a dark cube. Before him, a MARBLE CHESSBOARD.<br>The wall opposite becomes a massive LED SCREEN. A hyper-realistic white chamber, its floor a human-sized chessboard. On the squares stand people, their bodies rigid, their minds locked in the same simulation.<br>LENA is the White Queen. Her face is a mask of pure terror.<br>ANNA is the White Bishop. Her eyes are wide with genuine fear, screaming a silent apology at Caleb.<br>MAYA is a White Pawn. She looks confused, lost.<br>A sleek, humanoid ROBOT glides onto the screen. Its head is a blank monitor. A voice emerges, synthesized and dripping with theatrical malice.</p>
+
+            <p class="character">THE GAMEMASTER (V.O.)</p>
+            <p class="dialogue">Welcome, Caleb. The rules are chess. A piece is captured, the neuro-link simulates catastrophic cardiac arrest. The brain makes it real. Win, and the survivors are freed. I win... everyone's system crashes.</p>
+            <p class="action">The robot’s monitor-head flickers, showing the smug face of MARCUS (40s, COO).</p>
+
+            <p class="character">MARCUS (on screen)</p>
+            <p class="dialogue">You look surprised. I learned from the best. Pawn to D4.</p>
+
+            <p class="character">CALEB</p>
+            <p class="dialogue">Marcus, you corporate parasite. Let them go. This is between us.</p>
+
+            <p class="character">MARCUS (on screen)</p>
+            <p class="parenthetical">(laughing)</p>
+            <p class="dialogue">Oh, it’s far too late for that. Remember the Helios Project, Caleb? My project. My ticket to the board. You stole it, buried me in legal, and called it "good business." This is just good business. Knight to F6.</p>
+            <p class="action">The game is a brutal ballet. Marcus plays with a ferocity Caleb has never seen, using high-risk, high-reward strategies. His taunts are surgical. After a pawn is captured, Marcus smirks.</p>
+
+            <p class="character">MARCUS (on screen)</p>
+            <p class="dialogue">This one's from me, Cal. For my kid's college fund you vaporized. Another pawn sacrificed to protect your Bishop. You and Anna, always protecting each other. Tell me, when you were rewriting company bylaws to make her your number two, was that before or after you rewrote your wedding vows in that hotel bar?</p>
+            <p class="action">Caleb flinches. He glances at Anna. Her eyes shut tight in a wave of crushing shame, then open to look at him, her expression a silent, desperate plea.<br>The endgame arrives. Caleb has his Queen (Lena), his Bishop (Anna), and Maya, now a pawn on the seventh rank. One move from becoming a queen herself.<br>Marcus makes his move. A devastating, open threat on Lena. The choice is clear. The choice is hell. Save Lena, his innocent wife, and he's checkmated in three, killing Maya and Anna. Sacrifice her... and promote the pawn to win.<br>Lena looks directly at him through the screen, tears streaming down her face, pleading with her eyes.<br>Caleb’s composure shatters. He’s breathing hard, sweat beading on his forehead.</p>
+            
+            <p class="character">CALEB</p>
+            <p class="dialogue">Don’t make me do this, Lena. Please…</p>
+
+            <p class="character">MARCUS (on screen)</p>
+            <p class="dialogue">Oh, she can’t hear you. But I can. Make the choice, King. Your wife, or the daughter you taught how to play? Who do you sacrifice?</p>
+            <p class="action">Caleb looks at Maya's terrified face. He hears her voice in his head: <em>Sometimes you have to give up a powerful piece to win.</em> He closes his eyes. A single tear escapes.</p>
+
+            <p class="character">CALEB</p>
+            <p class="parenthetical">(a strangled whisper)</p>
+            <p class="dialogue">Pawn... to H8. Promote... to Queen.</p>
+            <p class="action">Silence hangs in the air, thick and heavy.<br>The black Rook on the screen slides forward. The neuro-link on Lena's halo glows with a fatal red light.<br>Then, a new voice fills the chamber. Not Marcus. It's Lena's. Calm, clear, and victorious.</p>
+
+            <p class="character">LENA (V.O.)</p>
+            <p class="dialogue">Checkmate.</p>
+            <p class="action">On the screen, Marcus’s shocked face is instantly replaced by a pre-recorded video of LENA. She sits in Caleb’s office chair, looking directly into the camera. Poised. In control.</p>
+
+            <p class="character">LENA (on screen)</p>
+            <p class="dialogue">You thought this was his game? Marcus was a tool. A greedy man with a grudge, easy to wind up and point in the right direction.</p>
+
+            <p class="transition">FLASHBACK TO:</p>
+            <h3>EXT. HOTEL ROOFTOP BAR - NIGHT (ONE YEAR AGO)</h3>
+            <p class="action">We see the scene from the cold open again. Caleb and Anna, their hands clasped.</p>
+
+            <p class="character">CALEB (V.O.)</p>
+            <p class="dialogue">She won’t. I have everything under control. Always.</p>
+            <p class="action">The camera PULLS BACK from their table, moving into the shadows of the bar entrance... where LENA watches them. Her face is unnervingly still, her eyes like camera lenses. She lifts her phone, and we see their clasped hands on the screen. She just lowers the phone, her expression hardening from shock into something cold, sharp, and deliberate.</p>
+
+            <p class="character">LENA (V.O.)</p>
+            <p class="dialogue">He was right. He did have everything under control. He just didn't realize... I was the one taking notes.</p>
+            
+            <p class="transition">BACK TO SCENE:</p>
+            <p class="action">We are back on Lena's face in the pre-recorded video.</p>
+
+            <p class="character">LENA (on screen)</p>
+            <p class="dialogue">This was never about the company. This was about the promises you broke.</p>
+            <p class="action">The screen flashes with a security log: Caleb's keycard accessing the executive suite. Anna's keycard accessing the same suite, two minutes later.</p>
+
+            <p class="character">LENA (on screen)</p>
+            <p class="dialogue">You taught me that the queen is the most powerful piece on the board. You were wrong. The most powerful piece is the one who controls the player. You win the game, Caleb. You get to keep your kingdom. But every time you look at our daughter, you will see my face. You will remember that you chose to kill me to save yourself. You will be a king. On a throne of ash. Ruling a kingdom of one.</p>
+            <p class="action">The light on her virtual neuro-link intensifies and then goes dark with a soft, final HISS. She's gone.<br>In a remote control room, Marcus screams as straps shoot from his chair, locking him down.</p>
+
+            <p class="character">MARCUS</p>
+            <p class="dialogue">What? No! That wasn't the deal!</p>
+
+            <p class="character">CALEB</p>
+            <p class="parenthetical">(eyes vacant, voice hollow)</p>
+            <p class="dialogue">Initiate King's Echo Protocol.</p>
+            <p class="action">On the marble board, the pieces rearrange themselves. Caleb's hidden protocol—a logic bomb designed to trap any hostile user in a feedback loop—activates. Marcus’s control room reconfigures into the bleak prison Caleb just occupied.<br>The clasps on Caleb's chair retract. The pods holding Maya and Anna open. Maya runs to him, burying her face in his chest.</p>
+
+            <p class="character">MAYA</p>
+            <p class="dialogue">Daddy! You won! You did what you had to do!</p>
+            <p class="action">The innocent words are like daggers. Caleb holds her, his body rigid, staring at the empty space where Lena’s avatar stood.<br>Anna stumbles towards him, her face a mask of grief and guilt.</p>
+
+            <p class="character">ANNA</p>
+            <p class="dialogue">Cal... I... I'm so sorry. I never wanted—</p>
+            <p class="action">Caleb raises a hand, cutting her off. He doesn’t look at her. He can't.<br>He gently kneels, his eyes meeting Maya's.</p>
+
+            <p class="character">CALEB</p>
+            <p class="dialogue">Go with Anna, sweetheart. Daddy... has to clean up.</p>
+            <p class="action">Anna hesitates, then nods, tears in her eyes. She takes Maya's hand and leads her out of the chamber, leaving Caleb alone.<br>He stands in the vast, silent room. He slowly pulls his gold wedding ring from his finger. He looks at it, the symbol of a game he lost the moment he thought he could control it.<br>He unclenches his fist.<br>The ring drops to the steel floor.<br>The small, metallic CLATTER echoes in the crushing silence. It's the only sound in his new kingdom.</p>
+
+            <p class="transition">FADE TO BLACK.</p>
+
+            <p class="end-marker">[ END OF FILE ]</p>
+            
+        </section>
+    </main>
+
+</body>
+</html>
